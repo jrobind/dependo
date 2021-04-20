@@ -1,12 +1,15 @@
 jest.mock('fs');
 
 import fs from 'fs/promises';
-import { constructQuery, trimInformation, createDependencyFile } from '../src/utils';
+import {
+  constructQuery,
+  trimInformation,
+  createDependencyFile,
+} from '../src/utils';
 // @ts-ignore
 import mockApiPackage from '../__mocks__/api';
 
 describe('Utils test suite', () => {
-
   it('Should construct correct search query', () => {
     const query1 = '@babel/core';
     const query2 = 'react';
@@ -27,7 +30,7 @@ describe('Utils test suite', () => {
   it('Should write processed api package data to a json file', async () => {
     const processedApiData = trimInformation([mockApiPackage]);
     fs.writeFile = jest.fn();
-    
+
     await createDependencyFile(JSON.stringify(processedApiData));
     expect(fs.writeFile).toHaveBeenCalledTimes(1);
   });
