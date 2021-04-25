@@ -1,3 +1,5 @@
+// @ts-ignore
+import mockApiPackage from '../__mocks__/api';
 jest.mock('fs');
 
 import fs from 'fs/promises';
@@ -6,10 +8,12 @@ import {
   trimInformation,
   createDependencyFile,
 } from '../src/utils';
-// @ts-ignore
-import mockApiPackage from '../__mocks__/api';
 
 describe('Utils test suite', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('Should construct correct search query', () => {
     const query1 = '@babel/core';
     const query2 = 'react';
@@ -24,12 +28,13 @@ describe('Utils test suite', () => {
 
     expect(processedPropLength).toEqual(5);
     expect(processedApiData.name).toEqual('testscript');
+    // @ts-ignore
     expect(processedApiData.analyzedAt).toBe(undefined);
   });
 
   it('Should write processed api package data to a json file', async () => {
-    const processedApiData = trimInformation([mockApiPackage]);
     fs.writeFile = jest.fn();
+    const processedApiData = trimInformation([mockApiPackage]);
 
     await createDependencyFile(JSON.stringify(processedApiData));
     expect(fs.writeFile).toHaveBeenCalledTimes(1);
