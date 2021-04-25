@@ -1,7 +1,6 @@
 import fs from 'fs/promises';
 
 export interface PackageInformation {
-  [x: string]: any;
   name: string;
   homepage: string;
   githubStars: number;
