@@ -1,4 +1,4 @@
-# Dependo
+# Dependo [Node CI](https://github.com/jrobind/dependo/workflows/Node%20CI/badge.svg)
 
 Dependo is a dependency checker to help make sense of a large project.
 
