@@ -1,7 +1,12 @@
-#!/usr/bin/env node
 import fs from 'fs/promises';
 import { API_URL, getPackageInformation } from './api';
-import { constructQuery, trimInformation, createDependencyFile } from './utils';
+import * as Eta from 'eta';
+import myTemplate from './templates/template';
+import {
+  constructQuery,
+  refineInformation,
+  getNumberOfDepenencies,
+} from './utils';
 
 export const FILE_MATCH = 'package.json';
 export const CURRENT_DIRECTORY = process.cwd();
@@ -13,7 +18,7 @@ export async function loadFile(
   try {
     const files: string[] = await fs.readdir(path);
 
-    return files.filter(file => file === fileMatch)[0];
+    return files.find(file => file === fileMatch);
   } catch (error) {
     console.error(`Failed to read ${error}`);
   }
@@ -39,17 +44,34 @@ export async function aggregateDependencyResults(
       }),
     );
 
-    return JSON.stringify(trimInformation(packageInformation));
+    return JSON.stringify(refineInformation(packageInformation));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function createReportFile(data: string) {
+  try {
+    const response = data;
+    const { dependencies, devDependencies } = await getNumberOfDepenencies(
+      `${CURRENT_DIRECTORY}/${FILE_MATCH}`,
+    );
+
+    const result = Eta.render(myTemplate, {
+      dependencies,
+      devDependencies,
+    }) as string;
+
+    await fs.writeFile('dist/dependo.html', result);
   } catch (error) {
     console.error(error);
   }
 }
 
 export async function generateReport(path: string) {
-  console.log();
   const file = await loadFile(path, FILE_MATCH);
   const dependencies = await loadDependencies(file);
 
   const aggregatedDependencies = await aggregateDependencyResults(dependencies);
-  createDependencyFile(aggregatedDependencies);
+  createReportFile(aggregatedDependencies);
 }
