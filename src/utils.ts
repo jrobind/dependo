@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import { FILE_MATCH } from './lib';
 
 export interface PackageInformation {
   name: string;
@@ -6,6 +7,11 @@ export interface PackageInformation {
   githubStars: number;
   popularity: number;
   score: number;
+}
+
+export interface DependencyNumbers {
+  dependencies: number;
+  devDependencies: number;
 }
 
 export function constructQuery(packageName: string): string {
@@ -21,7 +27,7 @@ export function constructQuery(packageName: string): string {
   return packageName;
 }
 
-export function trimInformation(packages: Array<any>): PackageInformation[] {
+export function refineInformation(packages: Array<any>): PackageInformation[] {
   return packages.map(
     ({
       collected: { metadata, github },
@@ -37,11 +43,19 @@ export function trimInformation(packages: Array<any>): PackageInformation[] {
   );
 }
 
-export async function createDependencyFile(data: string) {
+export async function getNumberOfDepenencies(
+  path: string,
+): Promise<DependencyNumbers> {
   try {
-    const response = data;
-    await fs.writeFile('dependo.json', response);
+    const { dependencies, devDependencies } = JSON.parse(
+      await fs.readFile(path, 'binary'),
+    );
+
+    return {
+      dependencies: Object.keys(dependencies).length,
+      devDependencies: Object.keys(devDependencies).length,
+    };
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   }
 }
