@@ -62,7 +62,7 @@ export async function createReportFile(data: string) {
       devDependencies,
     }) as string;
 
-    await fs.writeFile('dist/dependo.html', result);
+    await fs.writeFile(`${process.cwd()}/dependo.html`, result);
   } catch (error) {
     console.error(error);
   }
