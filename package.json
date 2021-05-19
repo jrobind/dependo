@@ -2,8 +2,8 @@
   "name": "dependo",
   "version": "1.0.0",
   "description": "",
-  "main": "./build/bin.js",
-  "bin": "./build/bin.js",
+  "main": "./dist/bin.js",
+  "bin": "./dist/bin.js",
   "scripts": {
     "compile": "tsc && babel src --out-dir dist --extensions .ts",
     "start": "npm run compile && npm run compile-styles && node ./dist/bin.js",
