@@ -1,15 +1,20 @@
 import fs from 'fs/promises';
-import { API_URL, getPackageInformation } from './api';
 import * as Eta from 'eta';
-import myTemplate from './templates/template';
+
+import { FILE_MATCH, STYLES_PATH, API_URL, ETA_TEMPLATES } from './constants';
+import { getPackageInformation } from './api';
+import { DependencyType } from './enums';
+import {
+  PackageMeta,
+  PackageInformation,
+  TemplateDependecyData,
+} from './interfaces';
 import {
   constructQuery,
   refineInformation,
-  getNumberOfDepenencies,
+  splitDependenciesByType,
 } from './utils';
-
-export const FILE_MATCH = 'package.json';
-export const CURRENT_DIRECTORY = process.cwd();
+import './config';
 
 export async function loadFile(
   path: string,
@@ -20,58 +25,72 @@ export async function loadFile(
 
     return files.find(file => file === fileMatch);
   } catch (error) {
-    console.error(`Failed to read ${error}`);
+    throw new Error(error);
   }
 }
 
-export async function loadDependencies(file: string): Promise<any> {
+export async function loadDependencies(file: string): Promise<PackageMeta[]> {
   try {
     const data = JSON.parse(await fs.readFile(file, 'binary'));
 
-    return Object.keys({ ...data.devDependencies, ...data.dependencies });
+    return Object.keys({ ...data.dependencies })
+      .map(dep => ({ name: dep, type: DependencyType.DEPENDENCY }))
+      .concat(
+        Object.keys({ ...data.devDependencies }).map(devDep => ({
+          name: devDep,
+          type: DependencyType.DEV_DEPENDENCY,
+        })),
+      );
   } catch (error) {
-    console.error(`Failed to read ${error}`);
+    throw new Error(error);
   }
 }
 
 export async function aggregateDependencyResults(
-  dependencies: string[],
-): Promise<any> {
+  dependencies: PackageMeta[],
+): Promise<PackageInformation[]> {
   try {
     const packageInformation = await Promise.all(
       dependencies.map(async dependecy => {
-        return await getPackageInformation(API_URL, constructQuery(dependecy));
+        const packageInfo = await getPackageInformation(
+          API_URL,
+          constructQuery(dependecy.name),
+        );
+        packageInfo.type = dependecy.type;
+
+        return packageInfo;
       }),
     );
 
-    return JSON.stringify(refineInformation(packageInformation));
+    return refineInformation(packageInformation);
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   }
 }
 
-export async function createReportFile(data: string) {
+export async function createReportFile(data: PackageInformation[]) {
   try {
-    const response = data;
-    const { dependencies, devDependencies } = await getNumberOfDepenencies(
-      `${CURRENT_DIRECTORY}/${FILE_MATCH}`,
-    );
+    const css = await fs.readFile(STYLES_PATH, 'binary');
+    const depData: TemplateDependecyData = splitDependenciesByType(data);
+    const result = (await Eta.renderFile(ETA_TEMPLATES, {
+      css,
+      totalDeps: depData.dependencies.length,
+      totalDevDeps: depData.devDependencies.length,
+      depData,
+    })) as Promise<string> | void;
 
-    const result = Eta.render(myTemplate, {
-      dependencies,
-      devDependencies,
-    }) as string;
-
-    await fs.writeFile(`${process.cwd()}/dependo.html`, result);
+    if (typeof result === 'string') {
+      await fs.writeFile(`${process.cwd()}/dependo.html`, result);
+    }
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   }
 }
 
 export async function generateReport(path: string) {
   const file = await loadFile(path, FILE_MATCH);
   const dependencies = await loadDependencies(file);
-
   const aggregatedDependencies = await aggregateDependencyResults(dependencies);
+
   createReportFile(aggregatedDependencies);
 }
