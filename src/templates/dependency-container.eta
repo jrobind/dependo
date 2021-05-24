@@ -1,0 +1,6 @@
+<div class="container__dependencies">
+  <% it.data.forEach(function(dep){ %>
+    <div class="dependency"><%= dep.name %></div>
+  <% }) %>
+</div>
+

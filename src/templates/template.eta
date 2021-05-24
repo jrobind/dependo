@@ -1,31 +1,27 @@
-export default `
+
   <!doctype html>
   <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>dependo</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <style><%= it.css %></style>
   </head>
   <body>
     <main class="app">
       <section class="container">
         <h2 class="container__heading">
-          <span><%= it.dependencies %></span>
+          <span><%= it.totalDeps %></span>
           dependencies
         </h2>
-
-        <div class="container__dependencies">
-        </div>
+        <%~ includeFile('./dependency-container.eta', {data: it.depData.dependencies}) %>
       </section>
       <section class="container">
         <h2 class="container__heading">
-          <span><%= it.devDependencies %></span>
+          <span><%= it.totalDevDeps %></span>
           dev-dependencies
         </h2>
-
-        <div class="container__dependencies">
-        </div>
+        <%~ includeFile('./dependency-container.eta', {data: it.depData.devDependencies}) %>
       </section>
     </main>
   </body>
-</html>`;
+</html>
