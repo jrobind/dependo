@@ -1,6 +1,8 @@
-export default JSON.stringify([
+export default [
   {
     name: 'testscript',
+    githubStars: 40,
+    homepage: 'https://testscript.test',
     popularity: {
       communityInterest: 161,
       downloadsCount: 2345,
@@ -15,5 +17,6 @@ export default JSON.stringify([
         maintenance: 0.3333333333333333,
       },
     },
+    type: 'DEPENDENCY',
   },
-]);
+];

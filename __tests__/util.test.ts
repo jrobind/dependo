@@ -1,38 +1,21 @@
 // @ts-ignore
-import mockDependencies from '../__mocks__/dependencies';
-// @ts-ignore
 import mockApiPackage from '../__mocks__/api';
+// @ts-ignore
+import trimmedApiData from '../__mocks__/trimmed-api-data';
 
-global.console = require('../__mocks__/console');
-
-jest.mock('fs');
 jest.mock('../src/api', () => ({
   getPackageInformation: jest.fn().mockImplementation(() => mockApiPackage),
 }));
 
-import mock from 'mock-fs';
-
 import {
   constructQuery,
   refineInformation,
-  getNumberOfDepenencies,
+  splitDependenciesByType,
 } from '../src/utils';
 
 describe('main test suite', () => {
-  beforeAll(() => {
-    mock({
-      test: {
-        'package.json': JSON.stringify(mockDependencies),
-      },
-    });
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  afterAll(() => {
-    mock.restore();
   });
 
   it('Should construct correct search query', () => {
@@ -43,14 +26,12 @@ describe('main test suite', () => {
     expect(constructQuery(query2)).toEqual('react');
   });
 
-  it('Should retrieve the correct number of dependencies and devDependencies', async () => {
-    const path = `${process.cwd()}/test/package.json`;
-
-    const result = await getNumberOfDepenencies(path);
+  it('Should split dependencies by type', async () => {
+    const result = await splitDependenciesByType(trimmedApiData);
 
     expect(result).toEqual({
-      dependencies: 1,
-      devDependencies: 5,
+      dependencies: trimmedApiData,
+      devDependencies: [],
     });
   });
 
@@ -58,7 +39,7 @@ describe('main test suite', () => {
     const processedApiData = refineInformation([mockApiPackage])[0];
     const processedPropLength = Object.keys(processedApiData).length;
 
-    expect(processedPropLength).toEqual(5);
+    expect(processedPropLength).toEqual(6);
     expect(processedApiData.name).toEqual('testscript');
     // @ts-ignore
     expect(processedApiData.analyzedAt).toBe(undefined);
