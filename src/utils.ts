@@ -1,18 +1,5 @@
-import fs from 'fs/promises';
-import { FILE_MATCH } from './lib';
-
-export interface PackageInformation {
-  name: string;
-  homepage: string;
-  githubStars: number;
-  popularity: number;
-  score: number;
-}
-
-export interface DependencyNumbers {
-  dependencies: number;
-  devDependencies: number;
-}
+import { PackageInformation, TemplateDependecyData } from './interfaces';
+import { DependencyType } from './enums';
 
 export function constructQuery(packageName: string): string {
   // @babel/core >> %40babel%2Fcore
@@ -33,28 +20,37 @@ export function refineInformation(packages: Array<any>): PackageInformation[] {
       collected: { metadata, github },
       evaluation: { popularity },
       score,
+      type,
     }) => ({
       name: metadata.name,
-      homepage: metadata.homepage,
+      homepage: metadata.links.homepage,
       githubStars: github?.starsCount,
       popularity,
       score,
+      type,
     }),
   );
 }
 
-export async function getNumberOfDepenencies(
-  path: string,
-): Promise<DependencyNumbers> {
+export function splitDependenciesByType(
+  dependencies: PackageInformation[],
+): TemplateDependecyData {
   try {
-    const { dependencies, devDependencies } = JSON.parse(
-      await fs.readFile(path, 'binary'),
-    );
+    return dependencies.reduce(
+      (accum, current) => {
+        if (current.type === DependencyType.DEPENDENCY) {
+          accum.dependencies.push(current);
+        } else {
+          accum.devDependencies.push(current);
+        }
 
-    return {
-      dependencies: Object.keys(dependencies).length,
-      devDependencies: Object.keys(devDependencies).length,
-    };
+        return accum;
+      },
+      {
+        dependencies: <PackageInformation[]>[],
+        devDependencies: <PackageInformation[]>[],
+      },
+    );
   } catch (error) {
     throw new Error(error);
   }
