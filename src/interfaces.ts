@@ -1,4 +1,4 @@
-import { DependencyType } from './lib';
+import { DependencyType } from './enums';
 
 export interface PackageInformation {
   name: string;

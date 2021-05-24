@@ -1,17 +1,21 @@
 import fetch from 'node-fetch';
 
-export const API_URL = 'https://api.npms.io/v2/package/';
+import { API_URL } from './constants';
 
 export async function getPackageInformation(
   url: typeof API_URL,
   packageName: string,
-): Promise<string> {
-  let deserialise;
-  const response = await fetch(`${url}${packageName}`).catch(console.error);
+): Promise<any> {
+  try {
+    let data;
+    const response = await fetch(`${url}${packageName}`);
 
-  if (response) {
-    deserialise = await response.json();
+    if (response) {
+      data = await response.json();
+    }
+
+    return data;
+  } catch (error) {
+    throw new Error(error);
   }
-
-  return deserialise;
 }
