@@ -1,0 +1,11 @@
+:root {
+  --main-theme: #09090e;
+  --secondary-theme: #473f4e;
+
+  --text: #fff;
+}
+
+body {
+  background-color: var(--main-theme);
+  color: var(--text);
+}
