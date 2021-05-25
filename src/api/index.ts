@@ -1,11 +1,12 @@
 import fetch from 'node-fetch';
 
-import { API_URL } from './constants';
+import { ApiPackage } from '../interfaces/api';
+import { API_URL } from '../config/constants';
 
 export async function getPackageInformation(
   url: typeof API_URL,
   packageName: string,
-): Promise<any> {
+): Promise<ApiPackage> {
   try {
     let data;
     const response = await fetch(`${url}${packageName}`);

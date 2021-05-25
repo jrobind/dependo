@@ -1,20 +1,25 @@
 import fs from 'fs/promises';
 import * as Eta from 'eta';
 
-import { FILE_MATCH, STYLES_PATH, API_URL, ETA_TEMPLATES } from './constants';
-import { getPackageInformation } from './api';
-import { DependencyType } from './enums';
+import {
+  FILE_MATCH,
+  STYLES_PATH,
+  API_URL,
+  ETA_TEMPLATES,
+  DependencyType,
+} from '../config/constants';
+import { getPackageInformation } from '../api';
 import {
   PackageMeta,
   PackageInformation,
   TemplateDependecyData,
-} from './interfaces';
+} from '../interfaces/shared';
 import {
   constructQuery,
   refineInformation,
   splitDependenciesByType,
-} from './utils';
-import './config';
+} from '../utils';
+import '../config';
 
 export async function loadFile(
   path: string,
