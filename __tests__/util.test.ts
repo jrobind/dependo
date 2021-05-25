@@ -39,7 +39,7 @@ describe('main test suite', () => {
     const processedApiData = refineInformation([mockApiPackage])[0];
     const processedPropLength = Object.keys(processedApiData).length;
 
-    expect(processedPropLength).toEqual(6);
+    expect(processedPropLength).toEqual(8);
     expect(processedApiData.name).toEqual('testscript');
     // @ts-ignore
     expect(processedApiData.analyzedAt).toBe(undefined);

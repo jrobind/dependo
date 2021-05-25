@@ -21,7 +21,7 @@ import {
   aggregateDependencyResults,
   createReportFile,
 } from '../src/lib';
-import { FILE_MATCH } from '../src/constants';
+import { FILE_MATCH } from '../src/config/constants';
 import { refineInformation } from '../src/utils';
 
 describe('main test suite', () => {
