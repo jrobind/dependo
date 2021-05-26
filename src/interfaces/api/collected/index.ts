@@ -5,7 +5,7 @@ import { Source } from './source';
 
 export interface Collected {
   metadata: MetaData;
-  npm: Npm;
-  github: Github;
-  source: Source;
+  npm?: Npm;
+  github?: Github;
+  source?: Source;
 }

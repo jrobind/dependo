@@ -23,6 +23,7 @@ interface Details {
 
 interface Author extends Details {
   name: string;
+  url: string;
 }
 
 interface Repository {

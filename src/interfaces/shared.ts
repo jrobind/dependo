@@ -3,9 +3,10 @@ import { Score } from './api/score';
 
 export interface PackageInformation {
   name: string;
+  description: string;
   homepage: string;
   npmHomepage?: string;
-  githubHomepage?: string;
+  repository: string;
   githubStars?: number;
   popularity: Popularity;
   score: Score;
