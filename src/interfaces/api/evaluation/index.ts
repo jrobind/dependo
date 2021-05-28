@@ -13,7 +13,7 @@ export interface Quality {
 
 export interface Popularity {
   communityInterest: number;
-  downloadsCount: number;
+  downloadsCount: number | string;
   downloadsAcceleration: number;
   dependentsCount: number;
 }
@@ -25,7 +25,7 @@ export interface Quality {
   branding: number;
 }
 
-interface Maintenance {
+export interface Maintenance {
   releasesFrequency: number;
   commitsFrequency: number;
   openIssues: number;

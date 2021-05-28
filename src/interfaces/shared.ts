@@ -1,3 +1,4 @@
+import { Github } from './api/collected/github';
 import { Popularity } from './api/evaluation';
 import { Score } from './api/score';
 
@@ -7,9 +8,10 @@ export interface PackageInformation {
   homepage: string;
   npmHomepage?: string;
   repository: string;
-  githubStars?: number;
-  popularity: Popularity;
-  score: Score;
+  githubStars?: string;
+  downloadsCount: Popularity['downloadsCount'];
+  releasesFrequency: number;
+  maintenanceScore: Score['detail']['maintenance'];
   type?: string;
 }
 
