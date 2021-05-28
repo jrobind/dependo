@@ -1,3 +1,4 @@
+import millify from 'millify';
 import {
   PackageInformation,
   TemplateDependecyData,
@@ -23,18 +24,25 @@ export function refineInformation(
 ): PackageInformation[] {
   return packages.map(
     ({
-      collected: { metadata, github, npm },
-      evaluation: { popularity },
-      score,
+      collected: { metadata, github },
+      evaluation: { popularity, maintenance },
+      score: { detail },
       type,
     }) => ({
       name: metadata.name,
+      description: metadata.description,
       homepage: metadata.links.homepage,
-      githubStars: github?.starsCount,
-      githubHomepage: github?.homepage,
-      npmHomepage: npm?.homepage,
-      popularity,
-      score,
+      githubStars: github?.starsCount
+        ? millify(github?.starsCount)
+        : 'Not available',
+      repository: metadata.links.repository,
+      npmHomepage: metadata.links.npm,
+      downloadsCount: millify(+popularity.downloadsCount),
+      maintenance,
+      releasesFrequency: prettifyNormalisedScores(
+        maintenance.releasesFrequency,
+      ),
+      maintenanceScore: prettifyNormalisedScores(detail.maintenance),
       type,
     }),
   );
@@ -62,4 +70,12 @@ export function splitDependenciesByType(
   } catch (error) {
     throw new Error(error);
   }
+}
+
+export function prettifyNormalisedScores(score: number): number {
+  const twoDecimalPlaces = +score.toFixed(2);
+
+  return twoDecimalPlaces === 1
+    ? Math.round(twoDecimalPlaces)
+    : twoDecimalPlaces;
 }

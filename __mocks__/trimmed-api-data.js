@@ -1,14 +1,25 @@
 export default [
   {
     name: 'testscript',
+    description: 'An awesome test language',
     githubStars: 40,
+    downloadsCount: '2.3K',
     homepage: 'https://testscript.test',
+    npmHomepage: '',
+    releasesFrequency: 1,
+    repository: '',
     popularity: {
       communityInterest: 161,
-      downloadsCount: 2345,
       downloadsAcceleration: 1345.32,
       dependentsCount: 1823,
     },
+    maintenance: {
+      commitsFrequency: 0,
+      issuesDistribution: 0,
+      openIssues: 0,
+      releasesFrequency: 1,
+    },
+    maintenanceScore: 0.33,
     score: {
       final: 0.43437456068732777,
       detail: {
