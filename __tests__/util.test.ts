@@ -11,6 +11,7 @@ import {
   constructQuery,
   refineInformation,
   splitDependenciesByType,
+  prettifyNormalisedScores,
 } from '../src/utils';
 
 describe('main test suite', () => {
@@ -26,6 +27,12 @@ describe('main test suite', () => {
     expect(constructQuery(query2)).toEqual('react');
   });
 
+  it('should format normalised scores to two decimal places except integers', () => {
+    expect(prettifyNormalisedScores(0.233)).toEqual(0.23);
+    expect(prettifyNormalisedScores(0.957)).toEqual(0.96);
+    expect(prettifyNormalisedScores(1)).toEqual(1);
+  });
+
   it('Should split dependencies by type', async () => {
     const result = await splitDependenciesByType(trimmedApiData);
 
@@ -39,7 +46,7 @@ describe('main test suite', () => {
     const processedApiData = refineInformation([mockApiPackage])[0];
     const processedPropLength = Object.keys(processedApiData).length;
 
-    expect(processedPropLength).toEqual(8);
+    expect(processedPropLength).toEqual(11);
     expect(processedApiData.name).toEqual('testscript');
     // @ts-ignore
     expect(processedApiData.analyzedAt).toBe(undefined);
