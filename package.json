@@ -5,8 +5,9 @@
   "main": "./dist/bin.js",
   "bin": "./dist/bin.js",
   "scripts": {
+    "build": "npm run css && npm run compile && node ./dist/bin.js",
+    "css": "npx postcss src/styles/index.css -o src/styles/style.css --no-map --verbose",
     "compile": "tsc && babel src --out-dir dist --extensions .ts",
-    "start": "npm run compile && node ./dist/bin.js",
     "test": "jest"
   },
   "repository": {
@@ -36,6 +37,7 @@
   },
   "dependencies": {
     "eta": "^1.12.1",
+    "millify": "^4.0.0",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
@@ -59,6 +61,10 @@
     "jest": "^26.6.3",
     "lint-staged": "^10.5.4",
     "mock-fs": "^4.13.0",
+    "postcss": "^8.3.0",
+    "postcss-cli": "^8.3.1",
+    "postcss-import": "^14.0.2",
+    "postcss-nested": "^5.0.5",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-node": "^9.1.1",

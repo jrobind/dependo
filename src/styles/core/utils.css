@@ -1,0 +1,29 @@
+.group-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &--center {
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.group-row {
+  display: flex;
+  justify-content: space-between;
+
+  &--center {
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.divider {
+  border: 0;
+  height: 2px;
+  width: 60%;
+  position: relative;
+  margin: var(--spacing-xl) auto;
+  background: var(--secondary-theme);
+}

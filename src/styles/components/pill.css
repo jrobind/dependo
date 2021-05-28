@@ -1,0 +1,8 @@
+.pill {
+  font-family: var(--font-family-monospace);
+  font-weight: 500;
+  max-width: fit-content;
+  padding: var(--spacing-m);
+  border-radius: var(--border-radius-s);
+  background-color: var(--secondary-theme);
+}

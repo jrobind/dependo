@@ -1,0 +1,33 @@
+:root {
+  --font-family-helvetica: Helvetica;
+  --font-family-monospace: monospace;
+
+  --dependency-card-width: 450px;
+
+  --border-radius-s: 1rem;
+  --border-radius-m: 2rem;
+  --border-radius-l: 3rem;
+
+  --main-theme: #181818;
+  --secondary-theme: #404040;
+  --border-purple: #9c20aa;
+  --border-crimson: #fb3570;
+  --text: #fff;
+
+  --fs-1: 0.75rem;
+  --fs-2: 1rem;
+  --fs-3: 1.5rem;
+  --fs-4: 2rem;
+  --fs-5: 2.5rem;
+  --fs-6: 3rem;
+  --fs-7: 3.5rem;
+  --fs-8: 4rem;
+
+  --spacing-xs: 0.5rem;
+  --spacing-s: 0.75rem;
+  --spacing-m: 1rem;
+  --spacing-l: 1.5rem;
+  --spacing-xl: 2.5rem;
+  --spacing-xxl: 3.5rem;
+  --spacing-xxxl: 5rem;
+}
