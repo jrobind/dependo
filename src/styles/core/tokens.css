@@ -2,17 +2,18 @@
   --font-family-helvetica: Helvetica;
   --font-family-monospace: monospace;
 
-  --dependency-card-width: 450px;
+  --dependency-card-width: 350px;
 
   --border-radius-s: 1rem;
   --border-radius-m: 2rem;
   --border-radius-l: 3rem;
 
-  --main-theme: #181818;
+  --main-theme: #121212;
   --secondary-theme: #404040;
   --border-purple: #9c20aa;
   --border-crimson: #fb3570;
-  --text: #fff;
+  --off-white: #f6f6f6;
+  --light-grey: #c4c4c4;
 
   --fs-1: 0.75rem;
   --fs-2: 1rem;
