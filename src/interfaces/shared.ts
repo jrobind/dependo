@@ -24,3 +24,9 @@ export interface TemplateDependecyData {
   dependencies: PackageInformation[];
   devDependencies: PackageInformation[];
 }
+
+export interface GithubAPIRepoContent {
+  owner: string;
+  repo: string;
+  path: string;
+}

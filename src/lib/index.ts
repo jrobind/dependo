@@ -6,13 +6,19 @@ import {
   STYLES_PATH,
   API_URL,
   ETA_TEMPLATES,
+  CURRENT_DIRECTORY,
   DependencyType,
 } from '../config/constants';
-import { getPackageInformation } from '../api';
+import {
+  getPackageInformationLocally,
+  getPackageInformationExternally,
+} from '../api';
+import { ApiPackage } from '../interfaces/api';
 import {
   PackageMeta,
   PackageInformation,
   TemplateDependecyData,
+  GithubAPIRepoContent,
 } from '../interfaces/shared';
 import {
   constructQuery,
@@ -24,20 +30,21 @@ import '../config';
 export async function loadFile(
   path: string,
   fileMatch: typeof FILE_MATCH,
-): Promise<any> {
+): Promise<string | undefined> {
   try {
     const files: string[] = await fs.readdir(path);
+    const file = files.find(file => file === fileMatch);
 
-    return files.find(file => file === fileMatch);
+    if (file) {
+      return JSON.parse(await fs.readFile(file, 'binary'));
+    }
   } catch (error) {
     throw new Error(error);
   }
 }
 
-export async function loadDependencies(file: string): Promise<PackageMeta[]> {
+export async function loadDependencies(data: any): Promise<PackageMeta[]> {
   try {
-    const data = JSON.parse(await fs.readFile(file, 'binary'));
-
     return Object.keys({ ...data.dependencies })
       .map(dep => ({ name: dep, type: DependencyType.DEPENDENCY }))
       .concat(
@@ -56,12 +63,13 @@ export async function aggregateDependencyResults(
 ): Promise<PackageInformation[]> {
   try {
     const packageInformation = await Promise.all(
-      dependencies.map(async dependecy => {
-        const packageInfo = await getPackageInformation(
+      dependencies.map(async dependency => {
+        const packageInfo: ApiPackage = await getPackageInformationLocally(
           API_URL,
-          constructQuery(dependecy.name),
+          constructQuery(dependency.name),
         );
-        packageInfo.type = dependecy.type;
+
+        packageInfo.type = dependency.type as DependencyType; // add dependency type so we can split by type for template
 
         return packageInfo;
       }),
@@ -92,10 +100,22 @@ export async function createReportFile(data: PackageInformation[]) {
   }
 }
 
-export async function generateReport(path: string) {
-  const file = await loadFile(path, FILE_MATCH);
-  const dependencies = await loadDependencies(file);
-  const aggregatedDependencies = await aggregateDependencyResults(dependencies);
+export async function generateReport(url?: GithubAPIRepoContent) {
+  try {
+    const file = url
+      ? await getPackageInformationExternally(url)
+      : await loadFile(CURRENT_DIRECTORY, FILE_MATCH);
 
-  createReportFile(aggregatedDependencies);
+    // the error occurs because this is now raw converted from base64 and loadDependencies does not expect raw data. loadFile should probs load file data too
+    if (file) {
+      const dependencies = await loadDependencies(file);
+      const aggregatedDependencies = await aggregateDependencyResults(
+        dependencies,
+      );
+
+      createReportFile(aggregatedDependencies);
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
 }

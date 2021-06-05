@@ -2,6 +2,7 @@ import millify from 'millify';
 import {
   PackageInformation,
   TemplateDependecyData,
+  GithubAPIRepoContent,
 } from '../interfaces/shared';
 import { ApiPackage } from '../interfaces/api';
 import { DependencyType } from '../config/constants';
@@ -78,4 +79,15 @@ export function prettifyNormalisedScores(score: number): number {
   return twoDecimalPlaces === 1
     ? Math.round(twoDecimalPlaces)
     : twoDecimalPlaces;
+}
+
+export function reformatFileUrl(url: string): GithubAPIRepoContent {
+  // GitHub API get repo content https://docs.github.com/en/rest/reference/repos#get-repository-content
+  const contents = url.replace('https://github.com/', '').split('/');
+
+  return {
+    owner: contents[0],
+    repo: contents[1],
+    path: contents[contents.length - 1],
+  };
 }

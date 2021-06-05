@@ -1,6 +1,12 @@
 #!/usr/bin/env ts-node
 
-import { CURRENT_DIRECTORY } from './config/constants';
+import { reformatFileUrl } from './utils';
 import { generateReport } from './lib';
 
-generateReport(CURRENT_DIRECTORY);
+const args = process.argv.slice(2);
+
+if (args.length) {
+  generateReport(reformatFileUrl(args[0]));
+} else {
+  generateReport();
+}
