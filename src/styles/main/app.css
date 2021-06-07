@@ -1,12 +1,28 @@
 body {
   font-family: var(--font-family-helvetica);
   background-color: var(--main-theme);
-  color: var(--text);
+  color: var(--off-white);
 }
 
 h2 {
-  font-size: var(--fs-2);
-  margin: var(--spacing-l) 0;
+  font-size: var(--fs-4);
+  margin: var(--spacing-xl) 0;
+}
+
+a {
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(1.1);
+  }
+
+  &:visited svg {
+    fill: var(--light-grey);
+  }
 }
 
 .container {
@@ -14,27 +30,28 @@ h2 {
 
   &__dependencies {
     display: grid;
-    grid-gap: var(--spacing-l);
-    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    grid-gap: var(--spacing-xl);
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(var(--dependency-card-width), 1fr)
+    );
   }
 }
 
 .dependency-card {
-  background: linear-gradient(var(--main-theme), var(--main-theme)) padding-box,
-    linear-gradient(to right, var(--border-purple), var(--border-crimson))
-      border-box;
+  background: var(--gradient-background);
   border: 2px solid transparent;
   border-radius: var(--border-radius-s);
   padding: var(--spacing-l);
 
   &__heading {
-    font-size: var(--fs-3);
-    margin-bottom: var(--spacing-m);
-    text-align: center;
+    font-size: var(--fs-4);
   }
 
   &__description {
     font-size: var(--fs-5);
+    margin-top: var(--spacing-l);
+    text-align: center;
   }
 
   &__meta {
@@ -43,7 +60,8 @@ h2 {
     }
 
     &-key {
-      color: var(--secondary-theme);
+      color: var(--light-grey);
+      margin-top: var(--spacing-tiny);
     }
 
     .group-row div:first-of-type {

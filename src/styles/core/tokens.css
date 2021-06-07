@@ -2,14 +2,23 @@
   --font-family-helvetica: Helvetica;
   --font-family-monospace: monospace;
 
-  --dependency-card-width: 350px;
+  --dependency-card-width: 400px;
 
   --border-radius-s: 1rem;
   --border-radius-m: 2rem;
   --border-radius-l: 3rem;
 
+  --gradient-background: linear-gradient(
+        var(--card-background),
+        var(--card-background)
+      )
+      padding-box,
+    linear-gradient(to right, var(--border-purple), var(--border-crimson))
+      border-box;
+
   --main-theme: #121212;
   --secondary-theme: #404040;
+  --card-background: #1c1c1c;
   --border-purple: #9c20aa;
   --border-crimson: #fb3570;
   --off-white: #f6f6f6;
@@ -17,13 +26,16 @@
 
   --fs-1: 0.75rem;
   --fs-2: 1rem;
-  --fs-3: 1.5rem;
-  --fs-4: 2rem;
-  --fs-5: 2.5rem;
-  --fs-6: 3rem;
-  --fs-7: 3.5rem;
-  --fs-8: 4rem;
+  --fs-3: 1.25rem;
+  --fs-4: 1.75rem;
+  --fs-5: 2rem;
+  --fs-6: 2.25rem;
+  --fs-7: 3rem;
+  --fs-8: 3.5rem;
+  --fs-9: 4rem;
+  --fs-10: 4.5rem;
 
+  --spacing-tiny: 0.25rem;
   --spacing-xs: 0.5rem;
   --spacing-s: 0.75rem;
   --spacing-m: 1rem;

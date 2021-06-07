@@ -22,8 +22,8 @@
 .divider {
   border: 0;
   height: 2px;
-  width: 60%;
+  width: 50%;
   position: relative;
-  margin: var(--spacing-xl) auto;
+  margin: var(--spacing-l) auto;
   background: var(--secondary-theme);
 }
