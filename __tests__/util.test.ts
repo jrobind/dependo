@@ -4,7 +4,9 @@ import mockApiPackage from '../__mocks__/api';
 import trimmedApiData from '../__mocks__/trimmed-api-data';
 
 jest.mock('../src/api', () => ({
-  getPackageInformation: jest.fn().mockImplementation(() => mockApiPackage),
+  getPackageInformationLocally: jest
+    .fn()
+    .mockImplementation(() => mockApiPackage),
 }));
 
 import {
@@ -12,6 +14,7 @@ import {
   refineInformation,
   splitDependenciesByType,
   prettifyNormalisedScores,
+  extractRepoFileData,
 } from '../src/utils';
 
 describe('main test suite', () => {
@@ -50,5 +53,16 @@ describe('main test suite', () => {
     expect(processedApiData.name).toEqual('testscript');
     // @ts-ignore
     expect(processedApiData.analyzedAt).toBe(undefined);
+  });
+
+  it('Should extract repo data from url for use with GitHub API', () => {
+    const url = 'https://github.com/jrobind/soccer.js/blob/master/package.json';
+    const result = extractRepoFileData(url);
+
+    expect(result).toEqual({
+      owner: 'jrobind',
+      repo: 'soccer.js',
+      path: 'package.json',
+    });
   });
 });
