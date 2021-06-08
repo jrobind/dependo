@@ -1,3 +1,5 @@
+import shell from 'shelljs';
+
 import fs from 'fs/promises';
 import * as Eta from 'eta';
 
@@ -19,11 +21,13 @@ import {
   PackageInformation,
   TemplateDependecyData,
   GithubAPIRepoContent,
+  CliOptions,
 } from '../interfaces/shared';
 import {
   constructQuery,
   refineInformation,
   splitDependenciesByType,
+  extractRepoFileData,
 } from '../utils';
 import '../config';
 
@@ -81,7 +85,10 @@ export async function aggregateDependencyResults(
   }
 }
 
-export async function createReportFile(data: PackageInformation[]) {
+export async function createReportFile(
+  data: PackageInformation[],
+  out?: string,
+) {
   try {
     const css = await fs.readFile(STYLES_PATH, 'binary');
     const depData: TemplateDependecyData = splitDependenciesByType(data);
@@ -92,29 +99,36 @@ export async function createReportFile(data: PackageInformation[]) {
       depData,
     })) as Promise<string> | void;
 
+    if (out) {
+      shell.mkdir('-p', out);
+    }
+
     if (typeof result === 'string') {
-      await fs.writeFile(`${process.cwd()}/dependo.html`, result);
+      await fs.writeFile(`${out ? out : process.cwd()}/dependo.html`, result);
     }
   } catch (error) {
     throw new Error(error);
   }
 }
 
-export async function generateReport(url?: GithubAPIRepoContent) {
+export async function generateReport(options: CliOptions) {
   try {
-    const file = url
-      ? await getPackageInformationExternally(url)
-      : await loadFile(CURRENT_DIRECTORY, FILE_MATCH);
+    const { url, out } = options;
+    let file;
 
-    // the error occurs because this is now raw converted from base64 and loadDependencies does not expect raw data. loadFile should probs load file data too
-    if (file) {
-      const dependencies = await loadDependencies(file);
-      const aggregatedDependencies = await aggregateDependencyResults(
-        dependencies,
-      );
-
-      createReportFile(aggregatedDependencies);
+    if (url) {
+      const apiUrlData = extractRepoFileData(url) as GithubAPIRepoContent;
+      file = await getPackageInformationExternally(apiUrlData);
+    } else {
+      file = await loadFile(CURRENT_DIRECTORY, FILE_MATCH);
     }
+
+    const dependencies = await loadDependencies(file);
+    const aggregatedDependencies = await aggregateDependencyResults(
+      dependencies,
+    );
+
+    createReportFile(aggregatedDependencies, out);
   } catch (error) {
     throw new Error(error);
   }

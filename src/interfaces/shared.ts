@@ -30,3 +30,8 @@ export interface GithubAPIRepoContent {
   repo: string;
   path: string;
 }
+
+export interface CliOptions {
+  url?: string;
+  out?: string;
+}

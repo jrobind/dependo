@@ -81,7 +81,7 @@ export function prettifyNormalisedScores(score: number): number {
     : twoDecimalPlaces;
 }
 
-export function reformatFileUrl(url: string): GithubAPIRepoContent {
+export function extractRepoFileData(url: string): GithubAPIRepoContent {
   // GitHub API get repo content https://docs.github.com/en/rest/reference/repos#get-repository-content
   const contents = url.replace('https://github.com/', '').split('/');
 
