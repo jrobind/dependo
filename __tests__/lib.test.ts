@@ -9,7 +9,9 @@ global.console = require('../__mocks__/console');
 
 jest.mock('fs');
 jest.mock('../src/api', () => ({
-  getPackageInformation: jest.fn().mockImplementation(() => mockApiPackage),
+  getPackageInformationLocally: jest
+    .fn()
+    .mockImplementation(() => mockApiPackage),
 }));
 
 import * as Eta from 'eta';
@@ -45,17 +47,19 @@ describe('main test suite', () => {
     fs.readdir = jest
       .fn()
       .mockResolvedValueOnce(['test.js', 'package.json', 'package-lock.json']);
+    fs.readFile = jest
+      .fn()
+      .mockResolvedValueOnce(JSON.stringify('example file content'));
 
-    const file = await loadFile('/test', FILE_MATCH);
+    const fileContent = await loadFile('/test', FILE_MATCH);
 
     expect(fs.readdir).toHaveBeenCalledTimes(1);
     expect(fs.readdir).toHaveBeenCalledWith('/test');
-    expect(file).toEqual('package.json');
+    expect(fileContent).toEqual('example file content');
   });
 
   it('Should return correct dev-dependencies and dependencies', async () => {
-    const file = `${process.cwd()}/test/package.json`;
-    const dependencies = await loadDependencies(file);
+    const dependencies = await loadDependencies(packageMock);
 
     expect(dependencies).toEqual(expect.arrayContaining(dependenciesList));
   });
@@ -80,6 +84,6 @@ describe('main test suite', () => {
       { name: 'testscript', type: 'DEPENDENCY' },
     ]);
 
-    expect(result).toEqual(trimmedApiData);
+    expect(result).toStrictEqual(trimmedApiData);
   });
 });

@@ -1,5 +1,4 @@
-import { Github } from './api/collected/github';
-import { Popularity } from './api/evaluation';
+import { Maintenance, Popularity } from './api/evaluation';
 import { Score } from './api/score';
 
 export interface PackageInformation {
@@ -10,6 +9,7 @@ export interface PackageInformation {
   repository: string;
   githubStars?: string;
   downloadsCount: Popularity['downloadsCount'];
+  maintenance: Maintenance;
   releasesFrequency: number;
   maintenanceScore: Score['detail']['maintenance'];
   type?: string;
