@@ -36,7 +36,9 @@
     ]
   },
   "dependencies": {
+    "commander": "^7.2.0",
     "eta": "^1.12.1",
+    "js-base64": "^3.6.1",
     "millify": "^4.0.0",
     "node-fetch": "^2.6.1"
   },
