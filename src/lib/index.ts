@@ -3,14 +3,7 @@ import shell from 'shelljs';
 import fs from 'fs/promises';
 import * as Eta from 'eta';
 
-import {
-  FILE_MATCH,
-  STYLES_PATH,
-  API_URL,
-  ETA_TEMPLATES,
-  CURRENT_DIRECTORY,
-  DependencyType,
-} from '../config/constants';
+import * as constants from '../config/constants';
 import {
   getPackageInformationLocally,
   getPackageInformationExternally,
@@ -33,14 +26,14 @@ import '../config';
 
 export async function loadFile(
   path: string,
-  fileMatch: typeof FILE_MATCH,
+  fileMatch: typeof constants.FILE_MATCH,
 ): Promise<string | undefined> {
   try {
     const files: string[] = await fs.readdir(path);
     const file = files.find(file => file === fileMatch);
 
     if (file) {
-      return JSON.parse(await fs.readFile(file, 'binary'));
+      return JSON.parse(await fs.readFile(`${path}/${file}`, 'binary'));
     }
   } catch (error) {
     throw new Error(error);
@@ -50,11 +43,14 @@ export async function loadFile(
 export async function loadDependencies(data: any): Promise<PackageMeta[]> {
   try {
     return Object.keys({ ...data.dependencies })
-      .map(dep => ({ name: dep, type: DependencyType.DEPENDENCY }))
+      .map(dep => ({
+        name: dep,
+        type: 'DEPENDENCY' as constants.DependencyType,
+      }))
       .concat(
         Object.keys({ ...data.devDependencies }).map(devDep => ({
           name: devDep,
-          type: DependencyType.DEV_DEPENDENCY,
+          type: 'DEV_DEPENDENCY' as constants.DependencyType,
         })),
       );
   } catch (error) {
@@ -69,11 +65,11 @@ export async function aggregateDependencyResults(
     const packageInformation = await Promise.all(
       dependencies.map(async dependency => {
         const packageInfo: ApiPackage = await getPackageInformationLocally(
-          API_URL,
+          constants.API_URL,
           constructQuery(dependency.name),
         );
 
-        packageInfo.type = dependency.type as DependencyType; // add dependency type so we can split by type for template
+        packageInfo.type = dependency.type as constants.DependencyType; // add dependency type so we can split by type for template
 
         return packageInfo;
       }),
@@ -90,9 +86,9 @@ export async function createReportFile(
   out?: string,
 ) {
   try {
-    const css = await fs.readFile(STYLES_PATH, 'binary');
+    const css = await fs.readFile(constants.STYLES_PATH, 'binary');
     const depData: TemplateDependecyData = splitDependenciesByType(data);
-    const result = (await Eta.renderFile(ETA_TEMPLATES, {
+    const result = (await Eta.renderFile(constants.ETA_TEMPLATES, {
       css,
       totalDeps: depData.dependencies.length,
       totalDevDeps: depData.devDependencies.length,
@@ -104,7 +100,10 @@ export async function createReportFile(
     }
 
     if (typeof result === 'string') {
-      await fs.writeFile(`${out ? out : process.cwd()}/dependo.html`, result);
+      await fs.writeFile(
+        `${out ? out : process.cwd()}/${constants.FILE_NAME}.html`,
+        result,
+      );
     }
   } catch (error) {
     throw new Error(error);
@@ -120,7 +119,7 @@ export async function generateReport(options: CliOptions) {
       const apiUrlData = extractRepoFileData(url) as GithubAPIRepoContent;
       file = await getPackageInformationExternally(apiUrlData);
     } else {
-      file = await loadFile(CURRENT_DIRECTORY, FILE_MATCH);
+      file = await loadFile(constants.CURRENT_DIRECTORY, constants.FILE_MATCH);
     }
 
     const dependencies = await loadDependencies(file);
