@@ -5,25 +5,30 @@ import mockApiPackage from '../__mocks__/api';
 // @ts-ignore
 import trimmedApiData from '../__mocks__/trimmed-api-data';
 
+jest.mock('../src/config/constants', () => ({
+  STYLES_PATH: `${process.cwd()}/styles/style.css`,
+  FILE_MATCH: 'package.json',
+  FILE_NAME: 'dependo',
+  ETA_TEMPLATES: `${process.cwd()}/templates/template.eta`,
+}));
+
 global.console = require('../__mocks__/console');
 
-jest.mock('fs');
 jest.mock('../src/api', () => ({
   getPackageInformationLocally: jest
     .fn()
     .mockImplementation(() => mockApiPackage),
 }));
 
-import * as Eta from 'eta';
 import mock from 'mock-fs';
-import fs from 'fs/promises';
+import fs from 'fs';
 import {
   loadFile,
   loadDependencies,
   aggregateDependencyResults,
   createReportFile,
 } from '../src/lib';
-import { FILE_MATCH } from '../src/config/constants';
+import { FILE_MATCH, FILE_NAME } from '../src/config/constants';
 import { refineInformation } from '../src/utils';
 
 describe('main test suite', () => {
@@ -31,6 +36,12 @@ describe('main test suite', () => {
     mock({
       test: {
         'package.json': JSON.stringify(packageMock),
+      },
+      styles: {
+        'style.css': 'body: { color: red }',
+      },
+      templates: {
+        'template.eta': 'template',
       },
     });
   });
@@ -44,18 +55,9 @@ describe('main test suite', () => {
   });
 
   it('Should return a package.json file', async () => {
-    fs.readdir = jest
-      .fn()
-      .mockResolvedValueOnce(['test.js', 'package.json', 'package-lock.json']);
-    fs.readFile = jest
-      .fn()
-      .mockResolvedValueOnce(JSON.stringify('example file content'));
+    const fileContent = await loadFile(`${process.cwd()}/test/`, FILE_MATCH);
 
-    const fileContent = await loadFile('/test', FILE_MATCH);
-
-    expect(fs.readdir).toHaveBeenCalledTimes(1);
-    expect(fs.readdir).toHaveBeenCalledWith('/test');
-    expect(fileContent).toEqual('example file content');
+    expect(fileContent).toEqual(packageMock);
   });
 
   it('Should return correct dev-dependencies and dependencies', async () => {
@@ -65,18 +67,25 @@ describe('main test suite', () => {
   });
 
   it('Should write processed api package data to a .html file', async () => {
-    const mockRenderFile = jest.spyOn(Eta, 'renderFile');
-    mockRenderFile.mockReturnValue(Promise.resolve(''));
-    fs.readFile = jest.fn();
-    fs.writeFile = jest.fn();
-
     const processedApiData = refineInformation([mockApiPackage]);
-
+    // no output dir specified
     await createReportFile(processedApiData);
 
-    expect(fs.readFile).toHaveBeenCalledTimes(1);
-    expect(fs.writeFile).toHaveBeenCalledTimes(1);
-    expect(Eta.renderFile).toHaveBeenCalledTimes(1);
+    const fileNoOutput = await fs.promises.readFile(
+      `${process.cwd()}/${FILE_NAME}.html`,
+      'binary',
+    );
+
+    expect(fileNoOutput).toEqual('template');
+    // output dir specified
+    await createReportFile(processedApiData, `${process.cwd()}/tester`);
+
+    const fileOutput = await fs.promises.readFile(
+      `${process.cwd()}/tester/${FILE_NAME}.html`,
+      'binary',
+    );
+
+    expect(fileOutput).toEqual('template');
   });
 
   it('Should aggregate dependency information results from API', async () => {
